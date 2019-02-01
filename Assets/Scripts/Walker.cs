@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Walker : MonoBehaviour
 {
+    public float speed = 1.0f;
     private Vector3 currentDirection;
     
     // Start is called before the first frame update
@@ -15,13 +16,16 @@ public class Walker : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CanMoveForward();
-        
-        if (Input.GetKeyDown(KeyCode.D))
+        if (!CanMoveForward())
         {
-            Debug.Log("Changing direction");
             ChangeDirection();
         }
+        TakeStep();
+    }
+
+    private void TakeStep()
+    {
+        transform.Translate(currentDirection * Time.deltaTime * speed, Space.World);
     }
 
     private void ChangeDirection()
@@ -34,7 +38,7 @@ public class Walker : MonoBehaviour
         int layerMask = 1 << 10;
 
         var position = transform.position;
-        Debug.DrawRay(position, currentDirection * 1000, Color.black, Time.deltaTime);
-        return Physics.Raycast(position, currentDirection, 1.0f, layerMask);
+        Debug.DrawRay(position, currentDirection * 0.5f, Color.yellow, Time.deltaTime);
+        return !Physics.Raycast(position, currentDirection, 0.5f, layerMask);
     }
 }
