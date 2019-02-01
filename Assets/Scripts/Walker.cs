@@ -6,15 +6,18 @@ public class Walker : MonoBehaviour
 {
     public float speed = 1.0f;
     private Vector3 currentDirection;
+    private Rigidbody rigidbody;
+    private const float SpeedScale = 0.1f;
     
     // Start is called before the first frame update
     void Start()
     {
         currentDirection = transform.TransformDirection(Vector3.forward);
+        rigidbody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         if (!CanMoveForward())
         {
@@ -25,7 +28,7 @@ public class Walker : MonoBehaviour
 
     private void TakeStep()
     {
-        transform.Translate(currentDirection * Time.deltaTime * speed, Space.World);
+        transform.Translate(currentDirection * speed * SpeedScale, Space.World);
     }
 
     private void ChangeDirection()
