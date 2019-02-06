@@ -9,17 +9,11 @@ using Vector3 = UnityEngine.Vector3;
 
 public class CameraControl : MonoBehaviour
 {
-    public enum CameraDirection
-    {
-        North, South, East, West
-    }
     
     private Vector3 lastMousePos = Vector3.zero;
     private bool isMouseHeld;
 
-    public float maxRotation = 30.0f;
     public float lookSpeed = 0.7f;
-    public CameraDirection direction = CameraDirection.North;
 
     private void Start()
     {
@@ -46,6 +40,11 @@ public class CameraControl : MonoBehaviour
         {
             RotateCameraDirection(false);
         }
+
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            //transform.localEulerAngles.x = 67.5;
+        }
         
         AdjustCameraLook(Input.mousePosition);
     }
@@ -55,23 +54,6 @@ public class CameraControl : MonoBehaviour
         float angle = toRight ? 90.0f : -90.0f;
         Vector3 parentCenter = transform.parent.TransformPoint(new Vector3(-1,0,1));
         transform.RotateAround(parentCenter, Vector3.up, angle);
-    }
-
-    private CameraDirection GetNextDirection()
-    {
-        switch (direction)
-        {
-            case CameraDirection.North:
-                return CameraDirection.East;
-            case CameraDirection.East:
-                return CameraDirection.South;
-            case CameraDirection.South:
-                return CameraDirection.West;
-            case CameraDirection.West:
-                return CameraDirection.North;
-            default:
-                return direction;
-        }
     }
 
     public void AdjustCameraLook(Vector3 position)

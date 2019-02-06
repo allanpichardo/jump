@@ -23,9 +23,11 @@ public class Walker : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (!CanMoveForward())
+        RaycastHit hit = CastRay();
+        
+        if (!CanMoveForward(hit))
         {
-            ChangeDirection();
+            ChangeDirection(hit);
         }
         TakeStep();
     }
@@ -39,20 +41,28 @@ public class Walker : MonoBehaviour
         transform.Translate(currentDirection * speed * SpeedScale, Space.World);
     }
 
-    private void ChangeDirection()
+    private void ChangeDirection(RaycastHit hit)
     {
-        currentDirection = Vector3.Cross(transform.TransformDirection(Vector3.up), currentDirection);
-        transform.Rotate(transform.TransformDirection(Vector3.up), 90.0f);
+        if (hit.collider.gameObject.layer == Layers.Obstacle)
+        {
+            currentDirection = Vector3.Cross(transform.TransformDirection(Vector3.up), currentDirection);
+            transform.Rotate(transform.up, 90.0f);
+        }
+        else if(hit.collider.gameObject.layer == Layers.Floor)
+        {
+            currentDirection = Vector3.Cross(currentDirection, transform.TransformDirection(Vector3.right));
+            transform.Rotate(transform.right, -90.0f);
+        }
     }
-   
-    private bool CanMoveForward()
-    {
-        int layerMask = 1 << 10;
 
+    private RaycastHit CastRay()
+    {
+        RaycastHit hit;
         var position = transform.position;
         
         Ray ray = new Ray(position, currentDirection);
-        bool isDetected = Physics.Raycast(ray, lookDistance, layerMask);
+        bool isDetected = Physics.Raycast(ray, out hit, lookDistance);
+        
         if (isDetected)
         {
             Debug.DrawRay(position, currentDirection * lookDistance, Color.red, Time.deltaTime);
@@ -61,7 +71,13 @@ public class Walker : MonoBehaviour
         {
             Debug.DrawRay(position, currentDirection * lookDistance, Color.white, Time.deltaTime);
         }
-
-        return !isDetected;
+        
+        return hit;
+    }
+   
+    private bool CanMoveForward(RaycastHit hit)
+    {
+        var o = hit.collider != null ? hit.collider.gameObject : null;
+        return !(hit.collider != null && (o.layer == Layers.Obstacle || o.layer == Layers.Floor));
     }
 }
