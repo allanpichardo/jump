@@ -1083,11 +1083,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1609808289, guid: cc87471f617624d40bda614b6a5cf405, type: 3}
       propertyPath: speed
-      value: 2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1609808289, guid: cc87471f617624d40bda614b6a5cf405, type: 3}
       propertyPath: lookDistance
-      value: 0.25
+      value: 0.3
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1609808290, guid: cc87471f617624d40bda614b6a5cf405, type: 3}
