@@ -7,7 +7,9 @@ public class Walker : MonoBehaviour
 {
     public bool isActive = false;
     public float speed = 1.0f;
-    public float lookDistance = 0.5f;
+    public float lookForwardDistance = 0.5f;
+    public float lookDownDistance = 0.5f;
+    public float redirectorDistance = 0.5f;
     private Vector3 currentDirection;
     private const float SpeedScale = 0.1f;
     private Animator animator;
@@ -52,10 +54,11 @@ public class Walker : MonoBehaviour
 
     private void CheckForRedirect(RaycastHit hit)
     {
-        if (hit.collider != null && Vector3.Distance(transform.position, hit.collider.gameObject.GetComponent<Renderer>().bounds.center) < 0.5f)
+        if (hit.collider != null && hit.collider.gameObject.layer == Layers.Floor)
         {
+            Bounds floorBounds = hit.collider.bounds;
             Redirector redirector = hit.collider.gameObject.GetComponent<Redirector>();
-            if (redirector.direction != Redirector.Direction.None)
+            if (redirector.direction != Redirector.Direction.None && Vector3.Distance(floorBounds.center, transform.position) < redirectorDistance)
             {
                 Vector3 newDirection;
                 switch (redirector.direction)
@@ -92,9 +95,12 @@ public class Walker : MonoBehaviour
         }
         else if(hit.collider.gameObject.layer == Layers.Floor)
         {
-            //Physics.gravity = currentDirection;
             currentDirection = Vector3.Cross(currentDirection, transform.TransformDirection(Vector3.right));
+            Vector3 ahead = transform.forward * (lookForwardDistance / 2);
+            //ahead = transform.TransformVector(ahead) + transform.position;
+            transform.localPosition += ahead;
             transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(currentDirection, -1 * transform.forward));
+            
         }
     }
 
@@ -104,15 +110,15 @@ public class Walker : MonoBehaviour
         var position = transform.position;
         
         Ray ray = new Ray(position, currentDirection);
-        bool isDetected = Physics.Raycast(ray, out hit, lookDistance);
+        bool isDetected = Physics.Raycast(ray, out hit, lookForwardDistance);
         
         if (isDetected)
         {
-            Debug.DrawRay(position, currentDirection * lookDistance, Color.red, Time.deltaTime);
+            Debug.DrawRay(position, currentDirection * lookForwardDistance, Color.red, Time.deltaTime);
         }
         else
         {
-            Debug.DrawRay(position, currentDirection * lookDistance, Color.white, Time.deltaTime);
+            Debug.DrawRay(position, currentDirection * lookForwardDistance, Color.white, Time.deltaTime);
         }
         
         return hit;
@@ -124,16 +130,15 @@ public class Walker : MonoBehaviour
         var position = transform.position;
         
         Ray ray = new Ray(position, -1 * transform.up);
-        float lookDistance = 0.3f;
-        bool isDetected = Physics.Raycast(ray, out hit, lookDistance);
+        bool isDetected = Physics.Raycast(ray, out hit, lookDownDistance);
         
         if (isDetected)
         {
-            Debug.DrawRay(position, -1 * transform.up * lookDistance, Color.red, Time.deltaTime);
+            Debug.DrawRay(position, -1 * transform.up * lookDownDistance, Color.red, Time.deltaTime);
         }
         else
         {
-            Debug.DrawRay(position, -1 * transform.up * lookDistance, Color.white, Time.deltaTime);
+            Debug.DrawRay(position, -1 * transform.up * lookDownDistance, Color.white, Time.deltaTime);
         }
         
         return hit;
