@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Walker : MonoBehaviour
 {
+    public bool isActive = false;
     public float speed = 1.0f;
     public float lookDistance = 0.5f;
     private Vector3 currentDirection;
@@ -23,13 +25,20 @@ public class Walker : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        RaycastHit hit = CastRay();
+        RaycastHit rayForward = CastRayForward();
+        RaycastHit rayDown = CastRayDown();
         
-        if (!CanMoveForward(hit))
+        if (!CanMoveForward(rayForward))
         {
-            ChangeDirection(hit);
+            ChangeDirection(rayForward);
         }
-        TakeStep();
+        
+        CheckForRedirect(rayDown);
+
+        if (isActive)
+        {
+            TakeStep();
+        }
     }
 
     private void TakeStep()
@@ -41,21 +50,55 @@ public class Walker : MonoBehaviour
         transform.Translate(currentDirection * speed * SpeedScale, Space.World);
     }
 
+    private void CheckForRedirect(RaycastHit hit)
+    {
+        if (hit.collider != null && Vector3.Distance(transform.position, hit.collider.gameObject.GetComponent<Renderer>().bounds.center) < 0.5f)
+        {
+            Redirector redirector = hit.collider.gameObject.GetComponent<Redirector>();
+            if (redirector.direction != Redirector.Direction.None)
+            {
+                Vector3 newDirection;
+                switch (redirector.direction)
+                {
+                    case Redirector.Direction.Up:
+                        currentDirection = Vector3.forward;
+                        transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(Vector3.forward, transform.up));
+                        break;
+                    case Redirector.Direction.Down:
+                        currentDirection = -1 * Vector3.forward;
+                        transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(-1 * Vector3.forward, transform.up));
+                        break;
+                    case Redirector.Direction.Left:
+                        currentDirection = -1 * Vector3.right;
+                        transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(-1 * Vector3.right, transform.up));
+                        break;
+                    case Redirector.Direction.Right:
+                        currentDirection = Vector3.right;
+                        transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(Vector3.right, transform.up));
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+    }
+
     private void ChangeDirection(RaycastHit hit)
     {
         if (hit.collider.gameObject.layer == Layers.Obstacle)
         {
             currentDirection = Vector3.Cross(transform.TransformDirection(Vector3.up), currentDirection);
-            transform.Rotate(transform.up, 90.0f);
+            transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(currentDirection, transform.up));
         }
         else if(hit.collider.gameObject.layer == Layers.Floor)
         {
+            //Physics.gravity = currentDirection;
             currentDirection = Vector3.Cross(currentDirection, transform.TransformDirection(Vector3.right));
-            transform.Rotate(transform.right, -90.0f);
+            transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(currentDirection, -1 * transform.forward));
         }
     }
 
-    private RaycastHit CastRay()
+    private RaycastHit CastRayForward()
     {
         RaycastHit hit;
         var position = transform.position;
@@ -74,10 +117,37 @@ public class Walker : MonoBehaviour
         
         return hit;
     }
+    
+    private RaycastHit CastRayDown()
+    {
+        RaycastHit hit;
+        var position = transform.position;
+        
+        Ray ray = new Ray(position, -1 * transform.up);
+        float lookDistance = 0.3f;
+        bool isDetected = Physics.Raycast(ray, out hit, lookDistance);
+        
+        if (isDetected)
+        {
+            Debug.DrawRay(position, -1 * transform.up * lookDistance, Color.red, Time.deltaTime);
+        }
+        else
+        {
+            Debug.DrawRay(position, -1 * transform.up * lookDistance, Color.white, Time.deltaTime);
+        }
+        
+        return hit;
+    }
    
     private bool CanMoveForward(RaycastHit hit)
     {
+        
         var o = hit.collider != null ? hit.collider.gameObject : null;
         return !(hit.collider != null && (o.layer == Layers.Obstacle || o.layer == Layers.Floor));
+    }
+
+    public void OnStartClicked()
+    {
+        isActive = true;
     }
 }
