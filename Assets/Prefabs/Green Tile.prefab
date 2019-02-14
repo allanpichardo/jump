@@ -108,4 +108,5 @@ MonoBehaviour:
   DownMaterial: {fileID: 2100000, guid: aaf33052262fc4cbebd98f708f96a00c, type: 2}
   LeftMaterial: {fileID: 2100000, guid: b4245ea5f11864b6fb3afdda9f4afd41, type: 2}
   RightMaterial: {fileID: 2100000, guid: 8d0fa8f96dac34cc2b02e6c5dc3fee42, type: 2}
-  direction: 4
+  PortalMaterial: {fileID: 2100000, guid: b139008e7cfdf42519d6fab29cc23bf4, type: 2}
+  direction: 5

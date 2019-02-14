@@ -5,11 +5,14 @@ using UnityEngine;
 
 public class Walker : MonoBehaviour
 {
+    public GameObject level;
     public bool isActive = false;
     public float speed = 1.0f;
     public float lookForwardDistance = 0.5f;
     public float lookDownDistance = 0.5f;
     public float redirectorDistance = 0.5f;
+
+    private TileSelector tileSelector;
     private Vector3 currentDirection;
     private const float SpeedScale = 0.1f;
     private Animator animator;
@@ -19,6 +22,7 @@ public class Walker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        tileSelector = level.GetComponent<TileSelector>();
         animator = GetComponent<Animator>();
         currentDirection = transform.TransformDirection(Vector3.forward);
         collider = GetComponent<Collider>();
@@ -60,7 +64,6 @@ public class Walker : MonoBehaviour
             Redirector redirector = hit.collider.gameObject.GetComponent<Redirector>();
             if (redirector.direction != Redirector.Direction.None && Vector3.Distance(floorBounds.center, transform.position) < redirectorDistance)
             {
-                Vector3 newDirection;
                 switch (redirector.direction)
                 {
                     case Redirector.Direction.Up:
@@ -79,10 +82,28 @@ public class Walker : MonoBehaviour
                         currentDirection = Vector3.right;
                         transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(Vector3.right, transform.up));
                         break;
+                    case Redirector.Direction.Portal:
+                        Teleport(redirector.transform);
+                        break;
+                    case Redirector.Direction.None:
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
             }
+        }
+    }
+
+    private void Teleport(Transform start)
+    {
+        if (tileSelector.GetActivePortalCount() == 2)
+        {
+            Transform destination = tileSelector.GetPortalOutletFrom(start);
+            Bounds b = destination.gameObject.GetComponent<Collider>().bounds;
+            Vector3 maxUp = Vector3.Scale(b.max, destination.up) * 2.0f;
+            transform.position = destination.position + maxUp;
+            transform.rotation = destination.rotation;
+            tileSelector.ClearPortals();
         }
     }
 

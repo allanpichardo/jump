@@ -8,16 +8,13 @@ using UnityEngine.UI;
 public class TileSelector : MonoBehaviour
 {
     public Camera camera;
-    public GameObject tilePanel;
     public List<Redirector.Direction> availableActions;
     private Stack<Redirector.Direction> directions;
-    public Sprite upSprite;
-    public Sprite downSprite;
-    public Sprite leftSprite;
-    public Sprite rightSprite;
+    private List<Transform> portals;
 
     private void Start()
     {
+        portals = new List<Transform>();
         directions = new Stack<Redirector.Direction>(availableActions);
     }
 
@@ -34,50 +31,47 @@ public class TileSelector : MonoBehaviour
             {
                 Redirector redirector = hit.collider.gameObject.GetComponent<Redirector>();
 
-                if (redirector.direction == Redirector.Direction.None)
+                if (redirector.direction == Redirector.Direction.None && directions.Count > 0)
                 {
                     redirector.direction = directions.Pop();
+                    portals.Add(redirector.transform);
                 }
                 else
                 {
                     directions.Push(redirector.direction);
                     redirector.direction = Redirector.Direction.None;
+                    portals.Remove(redirector.transform);
                 }
             }
         }
+    }
 
-        if (tilePanel != null)
+    public Transform GetPortalOutletFrom(Transform start)
+    {
+        foreach (var p in portals)
         {
-            foreach (var direction in directions)
+            if (!p.Equals(start))
             {
-                
+                return p.transform;
             }
         }
 
+        return start;
     }
 
-    private GameObject GetArrowIcon(Redirector.Direction direction)
+    public int GetActivePortalCount()
     {
-        GameObject NewObj = new GameObject(); //Create the GameObject
-        Image NewImage = NewObj.AddComponent<Image>(); //Add the Image Component script
-        switch (direction)
-        {
-            case Redirector.Direction.Up:
-                NewImage.sprite = upSprite;
-                break;
-            case Redirector.Direction.Down:
-                NewImage.sprite = downSprite;
-                break;
-            case Redirector.Direction.Left:
-                NewImage.sprite = leftSprite;
-                break;
-            case Redirector.Direction.Right:
-                NewImage.sprite = rightSprite;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+        return portals.Count;
+    }
 
-        return NewObj;
+    public void ClearPortals()
+    {
+        foreach (var p in portals)
+        {
+            Redirector redirector = p.GetComponent<Redirector>();
+            directions.Push(redirector.direction);
+            redirector.direction = Redirector.Direction.None;
+            portals.Remove(redirector.transform);
+        }
     }
 }

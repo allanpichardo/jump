@@ -12,6 +12,8 @@ public class CameraControl : MonoBehaviour
     
     private Vector3 lastMousePos = Vector3.zero;
     private bool isMouseHeld;
+    private bool isAHeld;
+    private bool isDHeld;
 
     public float lookSpeed = 0.7f;
 
@@ -34,26 +36,34 @@ public class CameraControl : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.A))
         {
-            RotateCameraDirection(true);
+            isAHeld = true;
         }
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKeyUp(KeyCode.A))
         {
-            RotateCameraDirection(false);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            //transform.localEulerAngles.x = 67.5;
+            isAHeld = false;
         }
         
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            isDHeld = true;
+        }
+        if (Input.GetKeyUp(KeyCode.D))
+        {
+            isDHeld = false;
+        }
+
         AdjustCameraLook(Input.mousePosition);
+        RotateCameraDirection();
     }
     
-    public void RotateCameraDirection(bool toRight)
+    public void RotateCameraDirection()
     {
-        float angle = toRight ? 90.0f : -90.0f;
-        Vector3 parentCenter = transform.parent.TransformPoint(new Vector3(-1,0,1));
-        transform.RotateAround(parentCenter, Vector3.up, angle);
+        if (isAHeld || isDHeld)
+        {
+            float angle = isAHeld ? 90.0f : -90.0f;
+            Vector3 parentCenter = transform.parent.TransformPoint(new Vector3(-1,0,1));
+            transform.RotateAround(parentCenter, Vector3.up, angle * Time.deltaTime);
+        }
     }
 
     public void AdjustCameraLook(Vector3 position)

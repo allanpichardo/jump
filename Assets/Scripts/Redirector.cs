@@ -10,16 +10,22 @@ public class Redirector : MonoBehaviour
     public Material DownMaterial;
     public Material LeftMaterial;
     public Material RightMaterial;
+    public Material PortalMaterial;
     
     public enum Direction
     {
-        Up, Down, Left, Right, None
+        Up, Down, Left, Right, Portal, None
     }
 
     public Direction direction = Direction.None;
 
     private Material defaultMaterial;
     private MeshRenderer meshRenderer;
+    
+    private const int CellWidth = 1;
+    private const int CellHeight = 1;
+    private float textureX = 0;
+    private float textureY = 0;
 
     private void Start()
     {
@@ -27,7 +33,7 @@ public class Redirector : MonoBehaviour
         defaultMaterial = meshRenderer.material;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         switch (direction)
         {
@@ -46,10 +52,20 @@ public class Redirector : MonoBehaviour
             case Direction.None:
                 meshRenderer.material = defaultMaterial;
                 break;
+            case Direction.Portal:
+                meshRenderer.material = PortalMaterial;
+                AnimatePortal();
+                break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
 
     }
-    
+
+    private void AnimatePortal()
+    {
+        textureX = (float) ((textureX + 0.25) % CellWidth);
+        textureY = (float) ((textureY + 0.25) % CellHeight);
+        meshRenderer.material.mainTextureOffset = new Vector2(textureX, textureY);
+    }
 }

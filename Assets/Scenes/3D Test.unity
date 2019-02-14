@@ -406,6 +406,7 @@ GameObject:
   m_Component:
   - component: {fileID: 161902776}
   - component: {fileID: 161902777}
+  - component: {fileID: 161902778}
   m_Layer: 0
   m_Name: Level
   m_TagString: Untagged
@@ -442,6 +443,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4308e7349fb4145e7a8fb488c051240f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &161902778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 161902775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d1aac82f96d644659cf10e74d95d613, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  camera: {fileID: 534669904}
+  availableActions: 0400000004000000
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -713,7 +728,7 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: "Camera Controls\n\tA: Rotate Left\n\tD: Rotate Right\n\tR Click+Drag: Tilt\n\nMovement\n\tL
-    Click: Drop Arrow"
+    Click: Drop Portal"
 --- !u!222 &306401755
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1145,7 +1160,6 @@ GameObject:
   - component: {fileID: 534669903}
   - component: {fileID: 534669906}
   - component: {fileID: 534669907}
-  - component: {fileID: 534669908}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1170,7 +1184,7 @@ Camera:
   m_GameObject: {fileID: 534669902}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_SensorSize: {x: 36, y: 24}
@@ -1226,7 +1240,7 @@ Skybox:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
   m_Enabled: 1
-  m_CustomSkybox: {fileID: 2100000, guid: e7471c7bc3e48f8408ba34ff15fec1e5, type: 2}
+  m_CustomSkybox: {fileID: 2100000, guid: 7e4024464a7f63a408ac3c1225f094f9, type: 2}
 --- !u!114 &534669907
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1240,25 +1254,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lookSpeed: 0.3
---- !u!114 &534669908
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 534669902}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d1aac82f96d644659cf10e74d95d613, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  camera: {fileID: 534669904}
-  tilePanel: {fileID: 0}
-  availableActions: 0300000000000000
-  upSprite: {fileID: 21300000, guid: 2b799c25ff27e40d39624b34f33ca40e, type: 3}
-  downSprite: {fileID: 21300000, guid: b04f192d36d42403d8573069c2efb855, type: 3}
-  leftSprite: {fileID: 21300000, guid: 880350a8a311841ef8b7eecd7d029e9b, type: 3}
-  rightSprite: {fileID: 21300000, guid: acfd176aa67724893bc86fc0a8de0e7b, type: 3}
 --- !u!1 &550617157
 GameObject:
   m_ObjectHideFlags: 0
@@ -3826,6 +3821,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b1336dd209da42d483c9dcbe0d6aebb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  level: {fileID: 161902775}
   isActive: 0
   speed: 1.5
   lookForwardDistance: 0.5
