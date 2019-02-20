@@ -9,7 +9,8 @@ using Vector3 = UnityEngine.Vector3;
 
 public class CameraControl : MonoBehaviour
 {
-    
+    public Transform centralPoint;
+    public Transform player;
     private Vector3 lastMousePos = Vector3.zero;
     private bool isMouseHeld;
     private bool isAHeld;
@@ -20,6 +21,14 @@ public class CameraControl : MonoBehaviour
     private void Start()
     {
         lastMousePos = Input.mousePosition;
+        if (centralPoint != null)
+        {
+            var position = centralPoint.position;
+            transform.Translate(new Vector3(position.x, position.y + 10,position.z - 5));
+            Vector3 lookHeading = player.position - transform.position;
+            lookHeading = lookHeading / lookHeading.magnitude;
+            transform.LookAt(lookHeading);
+        }
     }
 
     void Update()
@@ -60,8 +69,8 @@ public class CameraControl : MonoBehaviour
     {
         if (isAHeld || isDHeld)
         {
-            float angle = isAHeld ? 90.0f : -90.0f;
-            Vector3 parentCenter = transform.parent.TransformPoint(new Vector3(-1,0,1));
+            float angle = isAHeld ? -90.0f : 90.0f;
+            Vector3 parentCenter = centralPoint != null ? centralPoint.position : transform.parent.TransformPoint(new Vector3(-1,0,1));
             transform.RotateAround(parentCenter, Vector3.up, angle * Time.deltaTime);
         }
     }

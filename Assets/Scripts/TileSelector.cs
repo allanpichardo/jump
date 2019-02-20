@@ -10,11 +10,13 @@ public class TileSelector : MonoBehaviour
     public Camera camera;
     public List<Redirector.Direction> availableActions;
     private Stack<Redirector.Direction> directions;
-    private List<Transform> portals;
+    private List<TeleportPoint> portals;
+    private List<Redirector> activeRedirectors;
 
     private void Start()
     {
-        portals = new List<Transform>();
+        portals = new List<TeleportPoint>();
+        activeRedirectors = new List<Redirector>();
         directions = new Stack<Redirector.Direction>(availableActions);
     }
 
@@ -30,48 +32,51 @@ public class TileSelector : MonoBehaviour
             if (hit.collider != null && hit.collider.gameObject.layer == Layers.Floor)
             {
                 Redirector redirector = hit.collider.gameObject.GetComponent<Redirector>();
+                TeleportPoint tp = new TeleportPoint(hit.point, hit.collider.bounds, hit.collider.gameObject.transform);
 
                 if (redirector.direction == Redirector.Direction.None && directions.Count > 0)
                 {
                     redirector.direction = directions.Pop();
-                    portals.Add(redirector.transform);
+                    portals.Add(tp);
+                    activeRedirectors.Add(redirector);
                 }
                 else
                 {
                     directions.Push(redirector.direction);
                     redirector.direction = Redirector.Direction.None;
-                    portals.Remove(redirector.transform);
+                    portals.Remove(tp);
+                    activeRedirectors.Remove(redirector);
                 }
             }
         }
     }
 
-    public Transform GetPortalOutletFrom(Transform start)
+    public TeleportPoint GetPortalOutletFrom(Transform start)
     {
         foreach (var p in portals)
         {
-            if (!p.Equals(start))
+            if (!p.transform.Equals(start))
             {
-                return p.transform;
+                return p;
             }
         }
 
-        return start;
+        return null;
     }
 
     public int GetActivePortalCount()
     {
-        return portals.Count;
+        return activeRedirectors.Count;
     }
 
     public void ClearPortals()
     {
-        foreach (var p in portals)
+        foreach (var redirector in activeRedirectors)
         {
-            Redirector redirector = p.GetComponent<Redirector>();
             directions.Push(redirector.direction);
             redirector.direction = Redirector.Direction.None;
-            portals.Remove(redirector.transform);
         }
+        portals.Clear();
+        activeRedirectors.Clear();
     }
 }

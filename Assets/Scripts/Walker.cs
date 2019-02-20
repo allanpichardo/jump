@@ -98,11 +98,32 @@ public class Walker : MonoBehaviour
     {
         if (tileSelector.GetActivePortalCount() == 2)
         {
-            Transform destination = tileSelector.GetPortalOutletFrom(start);
-            Bounds b = destination.gameObject.GetComponent<Collider>().bounds;
-            Vector3 maxUp = Vector3.Scale(b.max, destination.up) * 2.0f;
+            TeleportPoint destination = tileSelector.GetPortalOutletFrom(start);
+            Bounds b = destination.bounds;
+            Vector3 maxUp = Vector3.Scale(b.extents, destination.transform.up);
             transform.position = destination.position + maxUp;
-            transform.rotation = destination.rotation;
+            Transform floor = destination.transform.parent.parent.parent;
+            
+            if (!start.parent.parent.parent.rotation.Equals(floor.rotation))
+            {
+                Vector3 dogForward = transform.TransformDirection(Vector3.forward);
+                Vector3 floorDown = floor.TransformDirection(Vector3.down);
+                Vector3 floorForward = floor.TransformDirection(Vector3.forward);
+                if (dogForward == floorDown)
+                {
+                    Vector3 dir = dogForward == Vector3.down ? Vector3.left : Vector3.right;
+                    currentDirection = destination.transform.parent.parent.parent.TransformDirection(dir);
+                    transform.Rotate(Vector3.right, -90.0f);
+                }else if (dogForward == floorForward)
+                {
+                    float angle = floorDown == Vector3.right ? 90.0f : -90.0f;
+                    transform.Rotate(Vector3.forward, angle);
+                }else if (dogForward == floorForward * -1)
+                {
+                    transform.Rotate(Vector3.forward, -90.0f);
+                }
+            }
+            //transform.LookAt(currentDirection);
             tileSelector.ClearPortals();
         }
     }

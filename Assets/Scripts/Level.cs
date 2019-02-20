@@ -7,6 +7,6 @@ public class Level : MonoBehaviour
 {
     public void OnLevelReset()
     {
-        SceneManager.LoadScene("3D Test");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
