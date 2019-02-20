@@ -109,18 +109,22 @@ public class Walker : MonoBehaviour
                 Vector3 dogForward = transform.TransformDirection(Vector3.forward);
                 Vector3 floorDown = floor.TransformDirection(Vector3.down);
                 Vector3 floorForward = floor.TransformDirection(Vector3.forward);
+                Vector3 floorUp = floor.TransformDirection(Vector3.up);
                 if (dogForward == floorDown)
                 {
                     Vector3 dir = dogForward == Vector3.down ? Vector3.left : Vector3.right;
-                    currentDirection = destination.transform.parent.parent.parent.TransformDirection(dir);
+                    currentDirection = floor.TransformDirection(dir);
                     transform.Rotate(Vector3.right, -90.0f);
                 }else if (dogForward == floorForward)
                 {
-                    float angle = floorDown == Vector3.right ? 90.0f : -90.0f;
-                    transform.Rotate(Vector3.forward, angle);
+                    transform.Rotate(Vector3.forward, -90.0f);
                 }else if (dogForward == floorForward * -1)
                 {
-                    transform.Rotate(Vector3.forward, -90.0f);
+                    transform.Rotate(Vector3.forward, 90.0f);
+                }else if (dogForward == floorUp)
+                {
+                    currentDirection = floor.TransformDirection(Vector3.right);
+                    transform.Rotate(Vector3.right, 90.0f);
                 }
             }
             //transform.LookAt(currentDirection);
