@@ -121,6 +121,10 @@ public class Walker : MonoBehaviour
                 }else if (dogForward == floorForward * -1)
                 {
                     transform.Rotate(Vector3.forward, -90.0f);
+                }else if (dogForward == floorDown * -1)
+                {
+                    currentDirection = floor.TransformDirection(Vector3.down);
+                    transform.Rotate(Vector3.right, -90.0f);
                 }
             }
             //transform.LookAt(currentDirection);
