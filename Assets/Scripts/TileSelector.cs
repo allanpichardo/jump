@@ -11,12 +11,10 @@ public class TileSelector : MonoBehaviour
     public List<Redirector.Direction> availableActions;
     private Stack<Redirector.Direction> directions;
     private List<TeleportPoint> portals;
-    private List<Redirector> activeRedirectors;
 
     private void Start()
     {
         portals = new List<TeleportPoint>();
-        activeRedirectors = new List<Redirector>();
         directions = new Stack<Redirector.Direction>(availableActions);
     }
 
@@ -32,20 +30,18 @@ public class TileSelector : MonoBehaviour
             if (hit.collider != null && hit.collider.gameObject.layer == Layers.Floor)
             {
                 Redirector redirector = hit.collider.gameObject.GetComponent<Redirector>();
-                TeleportPoint tp = new TeleportPoint(hit.point, hit.collider.bounds, hit.collider.gameObject.transform);
+                TeleportPoint tp = new TeleportPoint(hit.point, hit.collider.bounds, hit.collider.gameObject.transform, redirector);
 
                 if (redirector.direction == Redirector.Direction.None && directions.Count > 0)
                 {
                     redirector.direction = directions.Pop();
                     portals.Add(tp);
-                    activeRedirectors.Add(redirector);
                 }
                 else
                 {
                     directions.Push(redirector.direction);
                     redirector.direction = Redirector.Direction.None;
                     portals.Remove(tp);
-                    activeRedirectors.Remove(redirector);
                 }
             }
         }
@@ -66,17 +62,16 @@ public class TileSelector : MonoBehaviour
 
     public int GetActivePortalCount()
     {
-        return activeRedirectors.Count;
+        return portals.Count;
     }
 
     public void ClearPortals()
     {
-        foreach (var redirector in activeRedirectors)
+        foreach (var portal in portals)
         {
-            directions.Push(redirector.direction);
-            redirector.direction = Redirector.Direction.None;
+            directions.Push(portal.redirector.direction);
+            portal.redirector.direction = Redirector.Direction.None;
         }
         portals.Clear();
-        activeRedirectors.Clear();
     }
 }

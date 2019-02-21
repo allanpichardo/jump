@@ -109,23 +109,19 @@ public class Walker : MonoBehaviour
                 Vector3 dogForward = transform.TransformDirection(Vector3.forward);
                 Vector3 floorDown = floor.TransformDirection(Vector3.down);
                 Vector3 floorForward = floor.TransformDirection(Vector3.forward);
+                Vector3 floorUp = floor.TransformDirection(Vector3.up);
+                Vector3 floorBack = floor.TransformDirection(Vector3.back);
+                
                 if (dogForward == floorDown)
                 {
                     Vector3 dir = dogForward == Vector3.down ? Vector3.left : Vector3.right;
-                    currentDirection = destination.transform.parent.parent.parent.TransformDirection(dir);
-                    transform.Rotate(Vector3.right, -90.0f);
-                }else if (dogForward == floorForward)
+                    currentDirection = floor.TransformDirection(dir);
+                }else if (dogForward == floorUp)
                 {
-                    float angle = floorDown == Vector3.right ? 90.0f : -90.0f;
-                    transform.Rotate(Vector3.forward, angle);
-                }else if (dogForward == floorForward * -1)
-                {
-                    transform.Rotate(Vector3.forward, -90.0f);
-                }else if (dogForward == floorDown * -1)
-                {
-                    currentDirection = floor.TransformDirection(Vector3.down);
-                    transform.Rotate(Vector3.right, -90.0f);
+                    currentDirection = floor.TransformDirection(Vector3.right);
                 }
+                
+                transform.rotation = Quaternion.LookRotation(currentDirection, floorUp);
             }
             //transform.LookAt(currentDirection);
             tileSelector.ClearPortals();
