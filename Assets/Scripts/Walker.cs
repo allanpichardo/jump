@@ -11,6 +11,7 @@ public class Walker : MonoBehaviour
     public float lookForwardDistance = 0.5f;
     public float lookDownDistance = 0.5f;
     public float redirectorDistance = 0.5f;
+    public Collider lookaheadPoint;
 
     private TileSelector tileSelector;
     private Vector3 currentDirection;
@@ -31,13 +32,7 @@ public class Walker : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        RaycastHit rayForward = CastRayForward();
         RaycastHit rayDown = CastRayDown();
-        
-        if (!CanMoveForward(rayForward))
-        {
-            ChangeDirection(rayForward);
-        }
         
         CheckForRedirect(rayDown);
 
@@ -66,26 +61,13 @@ public class Walker : MonoBehaviour
             {
                 switch (redirector.direction)
                 {
-                    case Redirector.Direction.Up:
-                        currentDirection = Vector3.forward;
-                        transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(Vector3.forward, transform.up));
-                        break;
-                    case Redirector.Direction.Down:
-                        currentDirection = -1 * Vector3.forward;
-                        transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(-1 * Vector3.forward, transform.up));
-                        break;
-                    case Redirector.Direction.Left:
-                        currentDirection = -1 * Vector3.right;
-                        transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(-1 * Vector3.right, transform.up));
-                        break;
-                    case Redirector.Direction.Right:
-                        currentDirection = Vector3.right;
-                        transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(Vector3.right, transform.up));
-                        break;
-                    case Redirector.Direction.Portal:
+                    case Redirector.Direction.InPortal:
                         Teleport(redirector.transform);
                         break;
                     case Redirector.Direction.None:
+                        break;
+                    case Redirector.Direction.OutPortal:
+                        //tileSelector.ClosePortal(redirector);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -96,9 +78,9 @@ public class Walker : MonoBehaviour
 
     private void Teleport(Transform start)
     {
-        if (tileSelector.GetActivePortalCount() == 2)
+        TeleportPoint destination = tileSelector.GetPortalOutletFrom(start);
+        if (destination != null && destination.redirector.direction == Redirector.Direction.OutPortal)
         {
-            TeleportPoint destination = tileSelector.GetPortalOutletFrom(start);
             Bounds b = destination.bounds;
             Vector3 maxUp = Vector3.Scale(b.extents, destination.transform.up);
             transform.position = destination.position + maxUp;
@@ -123,47 +105,25 @@ public class Walker : MonoBehaviour
                 
                 transform.rotation = Quaternion.LookRotation(currentDirection, floorUp);
             }
-            //transform.LookAt(currentDirection);
-            tileSelector.ClearPortals();
+            tileSelector.ClosePortal(destination.redirector);
         }
     }
 
-    private void ChangeDirection(RaycastHit hit)
+    public void ChangeDirection(Collider collider)
     {
-        if (hit.collider.gameObject.layer == Layers.Obstacle)
+        if (collider.gameObject.layer == Layers.Obstacle)
         {
             currentDirection = Vector3.Cross(transform.TransformDirection(Vector3.up), currentDirection);
             transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(currentDirection, transform.up));
         }
-        else if(hit.collider.gameObject.layer == Layers.Floor)
+        else if(collider.gameObject.layer == Layers.Floor)
         {
             currentDirection = Vector3.Cross(currentDirection, transform.TransformDirection(Vector3.right));
             Vector3 ahead = transform.forward * (lookForwardDistance / 2);
-            //ahead = transform.TransformVector(ahead) + transform.position;
             transform.localPosition += ahead;
             transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(currentDirection, -1 * transform.forward));
             
         }
-    }
-
-    private RaycastHit CastRayForward()
-    {
-        RaycastHit hit;
-        var position = transform.position;
-        
-        Ray ray = new Ray(position, currentDirection);
-        bool isDetected = Physics.Raycast(ray, out hit, lookForwardDistance);
-        
-        if (isDetected)
-        {
-            Debug.DrawRay(position, currentDirection * lookForwardDistance, Color.red, Time.deltaTime);
-        }
-        else
-        {
-            Debug.DrawRay(position, currentDirection * lookForwardDistance, Color.white, Time.deltaTime);
-        }
-        
-        return hit;
     }
     
     private RaycastHit CastRayDown()
@@ -185,16 +145,10 @@ public class Walker : MonoBehaviour
         
         return hit;
     }
-   
-    private bool CanMoveForward(RaycastHit hit)
-    {
-        
-        var o = hit.collider != null ? hit.collider.gameObject : null;
-        return !(hit.collider != null && (o.layer == Layers.Obstacle || o.layer == Layers.Floor));
-    }
 
     public void OnStartClicked()
     {
         isActive = true;
     }
+
 }

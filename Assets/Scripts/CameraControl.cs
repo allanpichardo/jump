@@ -11,10 +11,16 @@ public class CameraControl : MonoBehaviour
 {
     public Transform centralPoint;
     public Transform player;
+    public Transform goal;
     private Vector3 lastMousePos = Vector3.zero;
     private bool isMouseHeld;
     private bool isAHeld;
     private bool isDHeld;
+    private bool isWHeld;
+    private bool isSHeld;
+    private bool isGameReady;
+    private Quaternion rotationEnd;
+    private float demoAngle;
 
     public float lookSpeed = 0.7f;
 
@@ -25,44 +31,84 @@ public class CameraControl : MonoBehaviour
         {
             var position = centralPoint.position;
             transform.Translate(new Vector3(position.x, position.y + 10,position.z - 5));
+            
             Vector3 lookHeading = player.position - transform.position;
             lookHeading = lookHeading / lookHeading.magnitude;
-            transform.LookAt(lookHeading);
+            
+            transform.LookAt(goal.position);
+            demoAngle = Quaternion.Angle(transform.rotation, rotationEnd);
+            rotationEnd = Quaternion.LookRotation(lookHeading, Vector3.up);
+        }
+    }
+
+    private void InitializeGameCamera()
+    {
+        if (!isGameReady && transform.rotation != rotationEnd)
+        {
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotationEnd, demoAngle * Time.deltaTime * lookSpeed);
+            isGameReady = false;
+        }
+        else
+        {
+            isGameReady = true;
         }
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(1))
-        {
-            isMouseHeld = true;
-        }
+        InitializeGameCamera();
 
-        if (Input.GetMouseButtonUp(1))
+        if (isGameReady)
         {
-            isMouseHeld = false;
-        }
+            if (Input.GetMouseButtonDown(1))
+            {
+                isMouseHeld = true;
+            }
 
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            isAHeld = true;
-        }
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            isAHeld = false;
-        }
+            if (Input.GetMouseButtonUp(1))
+            {
+                isMouseHeld = false;
+            }
+
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                isAHeld = true;
+            }
+            if (Input.GetKeyUp(KeyCode.A))
+            {
+                isAHeld = false;
+            }
         
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            isDHeld = true;
-        }
-        if (Input.GetKeyUp(KeyCode.D))
-        {
-            isDHeld = false;
-        }
+            if (Input.GetKeyDown(KeyCode.D))
+            {
+                isDHeld = true;
+            }
+            if (Input.GetKeyUp(KeyCode.D))
+            {
+                isDHeld = false;
+            }
+            
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                isWHeld = true;
+            }
+            if (Input.GetKeyUp(KeyCode.W))
+            {
+                isWHeld = false;
+            }
+        
+            if (Input.GetKeyDown(KeyCode.S))
+            {
+                isSHeld = true;
+            }
+            if (Input.GetKeyUp(KeyCode.S))
+            {
+                isSHeld = false;
+            }
 
-        AdjustCameraLook(Input.mousePosition);
-        RotateCameraDirection();
+            AdjustCameraLook(Input.mousePosition);
+            RotateCameraDirection();
+        }
     }
     
     public void RotateCameraDirection()
@@ -72,6 +118,12 @@ public class CameraControl : MonoBehaviour
             float angle = isAHeld ? -90.0f : 90.0f;
             Vector3 parentCenter = centralPoint != null ? centralPoint.position : transform.parent.TransformPoint(new Vector3(-1,0,1));
             transform.RotateAround(parentCenter, Vector3.up, angle * Time.deltaTime);
+        }
+
+        if (isWHeld || isSHeld)
+        {
+            float angle = isWHeld ? -90.0f : 90.0f;
+            transform.Rotate(new Vector3(angle * Time.deltaTime * lookSpeed, 0, 0), Space.Self);
         }
     }
 

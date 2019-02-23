@@ -9,4 +9,10 @@ public class Level : MonoBehaviour
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
+
+    public void OnLevelCompleted()
+    {
+        
+    }
+
 }

@@ -14,4 +14,16 @@ public class TeleportPoint
     public Vector3 position;
     public Bounds bounds;
     public Redirector redirector;
+
+    public override bool Equals(object obj)
+    {
+        if ((obj == null) || ! this.GetType().Equals(obj.GetType())) 
+        {
+            return false;
+        }
+        else { 
+            TeleportPoint p = (TeleportPoint) obj;
+            return p.transform.Equals(p.transform) && p.redirector.direction == this.redirector.direction;
+        } 
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -8,70 +9,152 @@ using UnityEngine.UI;
 public class TileSelector : MonoBehaviour
 {
     public Camera camera;
+    public Transform startingPosition;
+    public Material positiveHighlightMaterial;
+    public Material negativeHighlightMaterial;
+    public float portalDistance = 10.0f;
     public List<Redirector.Direction> availableActions;
+
     private Stack<Redirector.Direction> directions;
-    private List<TeleportPoint> portals;
+    private Dictionary<TeleportPoint, TeleportPoint> portals;
+    private Stack<TeleportPoint> lastPoint;
+    private GameObject lastHighlightedTile;
+    private int maxAttempts;
+    public LineRenderer lineRenderer;
 
     private void Start()
     {
-        portals = new List<TeleportPoint>();
+        portals = new Dictionary<TeleportPoint, TeleportPoint>();
+        lastPoint = new Stack<TeleportPoint>();
         directions = new Stack<Redirector.Direction>(availableActions);
+        maxAttempts = availableActions.Count;
+    }
+
+    private bool IsDistanceValid(GameObject tile)
+    {
+        if (portals.Count == availableActions.Count) return false;
+
+        Vector3 fromPosition = lastPoint.Count > 0 ? lastPoint.Peek().position : startingPosition.position;
+        return Vector3.Distance(tile.transform.position, fromPosition) <= portalDistance;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (!EventSystem.current.IsPointerOverGameObject() && Input.GetMouseButtonDown(0))
+        lineRenderer.positionCount = 0;
+        Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+        Physics.Raycast(ray, out hit);
+            
+        DrawLines(hit.point);
+        if (!EventSystem.current.IsPointerOverGameObject())
         {
-            Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit);
-
             if (hit.collider != null && hit.collider.gameObject.layer == Layers.Floor)
             {
+                GameObject tile = hit.collider.gameObject;
                 Redirector redirector = hit.collider.gameObject.GetComponent<Redirector>();
-                TeleportPoint tp = new TeleportPoint(hit.point, hit.collider.bounds, hit.collider.gameObject.transform, redirector);
 
-                if (redirector.direction == Redirector.Direction.None && directions.Count > 0)
+                if (IsDistanceValid(tile))
                 {
-                    redirector.direction = directions.Pop();
-                    portals.Add(tp);
+                    if(maxAttempts > 0) redirector.SetHighlight(true);
+                    
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        TeleportPoint tp = new TeleportPoint(hit.point, hit.collider.bounds,
+                            hit.collider.gameObject.transform, redirector);
+
+                        if (redirector.direction == Redirector.Direction.None && directions.Count > 0)
+                        {
+                            redirector.direction = directions.Pop();
+                            if (redirector.direction == Redirector.Direction.InPortal)
+                            {
+                                portals.Add(tp, null);
+                                lastPoint.Push(tp);
+                            }
+                            else if (redirector.direction == Redirector.Direction.OutPortal)
+                            {
+                                portals[lastPoint.Peek()] = tp;
+                                lastPoint.Push(tp);
+                            }
+
+                            maxAttempts--;
+                        }
+                        else
+                        {
+                            if (tp.Equals(lastPoint.Peek()))
+                            {
+                                if (redirector.direction == Redirector.Direction.InPortal)
+                                {
+                                    portals.Remove(lastPoint.Peek());
+                                }else if (redirector.direction == Redirector.Direction.OutPortal)
+                                {
+                                    var item = portals.First(kvp => kvp.Value.Equals(tp));
+                                    portals[item.Key] = null;
+                                }
+                                directions.Push(redirector.direction);
+                                redirector.direction = Redirector.Direction.None;
+                                lastPoint.Pop();
+
+                                maxAttempts++;
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    directions.Push(redirector.direction);
-                    redirector.direction = Redirector.Direction.None;
-                    portals.Remove(tp);
+                    if(maxAttempts > 0) redirector.SetHighlight(false);
                 }
             }
+        }
+    }
+
+    private void DrawLines(Vector3 mouseWorldPos)
+    {
+        List<Vector3> positions = new List<Vector3>();
+        foreach (var kvp in portals)
+        {
+            positions.Add(kvp.Key.position);
+            if (kvp.Value != null)
+            {
+                positions.Add(kvp.Value.position);
+            }
+            else
+            {
+                positions.Add(mouseWorldPos);
+            }
+        }
+
+        lineRenderer.positionCount = positions.Count;
+        lineRenderer.SetPositions(positions.ToArray());
+    }
+
+    public void ClosePortal(Redirector redirector)
+    {
+        var item = portals.First(kvp => kvp.Value.redirector.Equals(redirector));
+        if (item.Key != null)
+        {
+            directions.Push(item.Value.redirector.direction);
+            item.Value.redirector.direction = Redirector.Direction.None;
+            lastPoint.Pop();
+        
+            directions.Push(item.Key.redirector.direction);
+            item.Key.redirector.direction = Redirector.Direction.None;
+            lastPoint.Pop();
+        
+            portals.Remove(item.Key);
         }
     }
 
     public TeleportPoint GetPortalOutletFrom(Transform start)
     {
-        foreach (var p in portals)
+        foreach (TeleportPoint point in portals.Keys)
         {
-            if (!p.transform.Equals(start))
+            if (point.transform.Equals(start))
             {
-                return p;
+                return portals[point];
             }
         }
 
         return null;
-    }
-
-    public int GetActivePortalCount()
-    {
-        return portals.Count;
-    }
-
-    public void ClearPortals()
-    {
-        foreach (var portal in portals)
-        {
-            directions.Push(portal.redirector.direction);
-            portal.redirector.direction = Redirector.Direction.None;
-        }
-        portals.Clear();
     }
 }

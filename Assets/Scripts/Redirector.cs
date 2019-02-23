@@ -6,15 +6,14 @@ using UnityEngine.Events;
 
 public class Redirector : MonoBehaviour
 {
-    public Material UpMaterial;
-    public Material DownMaterial;
-    public Material LeftMaterial;
-    public Material RightMaterial;
-    public Material PortalMaterial;
+    public Material InPortalMaterial;
+    public Material OutPortalMaterial;
+    public Material positiveMaterial;
+    public Material negativeMaterial;
     
     public enum Direction
     {
-        Up, Down, Left, Right, Portal, None
+        InPortal, OutPortal, None
     }
 
     public Direction direction = Direction.None;
@@ -33,33 +32,55 @@ public class Redirector : MonoBehaviour
         defaultMaterial = meshRenderer.material;
     }
 
+    private void Update()
+    {
+        if (direction != Direction.None)
+        {
+            AnimatePortal();
+        }
+    }
+
     void FixedUpdate()
     {
         switch (direction)
         {
-            case Direction.Up:
-                meshRenderer.material = UpMaterial;
-                break;
-            case Direction.Down:
-                meshRenderer.material = DownMaterial;
-                break;
-            case Direction.Left:
-                meshRenderer.material = LeftMaterial;
-                break;
-            case Direction.Right:
-                meshRenderer.material = RightMaterial;
-                break;
             case Direction.None:
                 meshRenderer.material = defaultMaterial;
                 break;
-            case Direction.Portal:
-                meshRenderer.material = PortalMaterial;
-                AnimatePortal();
+            case Direction.InPortal:
+                meshRenderer.material = InPortalMaterial;
+                break;
+            case Direction.OutPortal:
+                meshRenderer.material = OutPortalMaterial;
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
 
+    }
+
+    public void SetHighlight(bool isPositive)
+    {
+        ClearHighlight();
+        
+        if (isPositive)
+        {
+            meshRenderer.material = positiveMaterial;
+        }
+        else
+        {
+            meshRenderer.material = negativeMaterial;
+        }
+    }
+
+    private void OnMouseExit()
+    {
+        ClearHighlight();
+    }
+
+    public void ClearHighlight()
+    {
+        meshRenderer.material = defaultMaterial;
     }
 
     private void AnimatePortal()
