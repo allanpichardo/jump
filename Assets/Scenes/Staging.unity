@@ -529,7 +529,7 @@ MonoBehaviour:
     type: 2}
   negativeHighlightMaterial: {fileID: 2100000, guid: bb01a33168f49457893571b7a33f5903,
     type: 2}
-  portalDistance: 10
+  portalDistance: 7
   availableActions: 0100000000000000
   lineRenderer: {fileID: 161902779}
 --- !u!120 &161902779
@@ -2535,7 +2535,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.2921958, y: 0.484092, z: 0.8501922}
+  m_Size: {x: 0.43857813, y: 0.484092, z: 0.8501922}
   m_Center: {x: -0.0032880306, y: 0.042992234, z: -0.30642563}
 --- !u!114 &1105124029
 MonoBehaviour:
