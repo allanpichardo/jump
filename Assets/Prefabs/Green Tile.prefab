@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5267562116654333235}
   m_Layer: 9
   m_Name: Green Tile
-  m_TagString: Untagged
+  m_TagString: Tile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -104,6 +104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 09e38410070444e49bbe842601240be2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  reachableMaterial: {fileID: 2100000, guid: 6eb7c1d777e8d4f28b10775c7c0f3512, type: 2}
   InPortalMaterial: {fileID: 2100000, guid: b139008e7cfdf42519d6fab29cc23bf4, type: 2}
   OutPortalMaterial: {fileID: 2100000, guid: 787e52b6c7d2b4d418beb301e9e6e4d4, type: 2}
   positiveMaterial: {fileID: 2100000, guid: f4ee7ff01453b4a9fb5acd65db4bbbd3, type: 2}

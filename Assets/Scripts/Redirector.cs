@@ -6,6 +6,7 @@ using UnityEngine.Events;
 
 public class Redirector : MonoBehaviour
 {
+    public Material reachableMaterial;
     public Material InPortalMaterial;
     public Material OutPortalMaterial;
     public Material positiveMaterial;
@@ -57,6 +58,19 @@ public class Redirector : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
 
+    }
+
+    public void SetReachable(bool isReachable)
+    {
+        ClearHighlight();
+        if(isReachable)
+        {
+            meshRenderer.material = reachableMaterial;
+        }
+        else
+        {
+            meshRenderer.material = defaultMaterial;
+        }
     }
 
     public void SetHighlight(bool isPositive)

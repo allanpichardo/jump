@@ -41,6 +41,11 @@ public class TileSelector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (maxAttempts > 0)
+        {
+            DrawRangeGrid();
+        }
+
         lineRenderer.positionCount = 0;
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -52,7 +57,7 @@ public class TileSelector : MonoBehaviour
             if (hit.collider != null && hit.collider.gameObject.layer == Layers.Floor)
             {
                 GameObject tile = hit.collider.gameObject;
-                Redirector redirector = hit.collider.gameObject.GetComponent<Redirector>();
+                Redirector redirector = tile.GetComponent<Redirector>();
 
                 if (IsDistanceValid(tile))
                 {
@@ -104,6 +109,19 @@ public class TileSelector : MonoBehaviour
                 {
                     if(maxAttempts > 0) redirector.SetHighlight(false);
                 }
+            }
+        }
+    }
+
+    private void DrawRangeGrid()
+    {
+        Redirector[] redirectors = FindObjectsOfType<Redirector>();
+
+        foreach(Redirector redirector in redirectors)
+        {
+            if(redirector.direction == Redirector.Direction.None)
+            {
+                redirector.SetReachable(IsDistanceValid(redirector.gameObject));
             }
         }
     }

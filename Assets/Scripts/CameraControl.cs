@@ -9,6 +9,7 @@ using Vector3 = UnityEngine.Vector3;
 
 public class CameraControl : MonoBehaviour
 {
+    public float introLookMultiplier = 0.5f;
     public Transform centralPoint;
     public Transform player;
     public Transform goal;
@@ -45,7 +46,7 @@ public class CameraControl : MonoBehaviour
     {
         if (!isGameReady && transform.rotation != rotationEnd)
         {
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotationEnd, demoAngle * Time.deltaTime * lookSpeed);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, rotationEnd, demoAngle * Time.deltaTime * lookSpeed * introLookMultiplier);
             isGameReady = false;
         }
         else
