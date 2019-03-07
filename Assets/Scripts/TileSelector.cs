@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class TileSelector : MonoBehaviour
 {
     public Camera camera;
+    public Text portalsText;
     public Transform startingPosition;
     public Material positiveHighlightMaterial;
     public Material negativeHighlightMaterial;
@@ -63,7 +64,7 @@ public class TileSelector : MonoBehaviour
                 {
                     if(maxAttempts > 0) redirector.SetHighlight(true);
                     
-                    if (Input.GetMouseButtonDown(0))
+                    if (Input.GetMouseButtonDown(0) && maxAttempts > 0)
                     {
                         TeleportPoint tp = new TeleportPoint(hit.point, hit.collider.bounds,
                             hit.collider.gameObject.transform, redirector);
@@ -110,6 +111,12 @@ public class TileSelector : MonoBehaviour
                     if(maxAttempts > 0) redirector.SetHighlight(false);
                 }
             }
+        }
+
+        if (portalsText)
+        {
+            portalsText.text = maxAttempts + " Portals";
+            portalsText.color = maxAttempts > 0 ? Color.white : Color.red;
         }
     }
 

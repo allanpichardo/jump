@@ -40,6 +40,11 @@ public class Walker : MonoBehaviour
         {
             TakeStep();
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            isActive = true;
+        }
     }
 
     private void TakeStep()

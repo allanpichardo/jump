@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Level : MonoBehaviour
 {
+    public Text titleText;
     public float titleDuration = 1.5f;
     private float accumTime;
     private bool isTitleTimeElapsed;
@@ -28,13 +30,15 @@ public class Level : MonoBehaviour
                 isTitleTimeElapsed = true;
                 TitleTimeHasElapsed();
             }
+
+            accumTime += Time.deltaTime;
         }
 
     }
 
     private void TitleTimeHasElapsed()
     {
-        Debug.Log("title time elapsed");
+        titleText.enabled = false;
     }
 
 }
