@@ -115,7 +115,8 @@ public class TileSelector : MonoBehaviour
 
         if (portalsText)
         {
-            portalsText.text = maxAttempts + " Portals";
+            string portals = maxAttempts == 1 ? "portal" : "portals";
+            portalsText.text = maxAttempts + " " + portals;
             portalsText.color = maxAttempts > 0 ? Color.white : Color.red;
         }
     }
