@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 0.14581496, g: 0.13377205, b: 0.24863783, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -592,7 +592,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextScene: 4
   titleText: {fileID: 1319098267}
-  titleDuration: 1.5
+  titleDuration: 4
 --- !u!114 &161902778
 MonoBehaviour:
   m_ObjectHideFlags: 0

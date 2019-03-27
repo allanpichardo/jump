@@ -661,7 +661,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nextScene: 0
   titleText: {fileID: 1319098267}
-  titleDuration: 1.5
+  titleDuration: 4
 --- !u!114 &161902778
 MonoBehaviour:
   m_ObjectHideFlags: 0

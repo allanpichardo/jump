@@ -19,11 +19,13 @@ public class Level0 : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.W)|| Input.GetKeyDown(KeyCode.A)|| Input.GetKeyDown(KeyCode.S)|| Input.GetKeyDown(KeyCode.D))
         {
+            StopAllCoroutines();
             StartCoroutine(ShowGuidance("Press SPACE to run"));
         }
 
         if(Input.GetKeyDown(KeyCode.Space))
         {
+            StopAllCoroutines();
             StartCoroutine(ShowGuidance("The dog will turn right when it hits an obstacle"));
         }
     }
