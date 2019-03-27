@@ -112,8 +112,9 @@ public class TileSelector : MonoBehaviour
 
         if (portalsText)
         {
-            string portals = maxAttempts == 1 ? "portal" : "portals";
-            portalsText.text = maxAttempts + " " + portals;
+            int j = Mathf.CeilToInt(maxAttempts / 2.0f);
+            string portals = j == 1 ? "JUMP" : "JUMPS";
+            portalsText.text = j + " " + portals;
             portalsText.color = maxAttempts > 0 ? Color.white : Color.red;
         }
     }

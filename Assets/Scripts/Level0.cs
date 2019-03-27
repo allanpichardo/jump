@@ -7,6 +7,9 @@ public class Level0 : MonoBehaviour
 {
     public Text titleText;
     public float waitTime = 4.0f;
+
+    private bool isFirstWasd = true;
+    private bool isFirstSpace = true;
     
     // Start is called before the first frame update
     void Start()
@@ -17,16 +20,18 @@ public class Level0 : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.W)|| Input.GetKeyDown(KeyCode.A)|| Input.GetKeyDown(KeyCode.S)|| Input.GetKeyDown(KeyCode.D))
+        if(isFirstWasd && (Input.GetKeyDown(KeyCode.W)|| Input.GetKeyDown(KeyCode.A)|| Input.GetKeyDown(KeyCode.S)|| Input.GetKeyDown(KeyCode.D)))
         {
             StopAllCoroutines();
             StartCoroutine(ShowGuidance("Press SPACE to run"));
+            isFirstWasd = false;
         }
 
-        if(Input.GetKeyDown(KeyCode.Space))
+        if(isFirstSpace && Input.GetKeyDown(KeyCode.Space))
         {
             StopAllCoroutines();
             StartCoroutine(ShowGuidance("The dog will turn right when it hits an obstacle"));
+            isFirstSpace = false;
         }
     }
 
