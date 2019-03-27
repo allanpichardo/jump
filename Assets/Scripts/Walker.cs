@@ -13,6 +13,7 @@ public class Walker : MonoBehaviour
     public float redirectorDistance = 0.5f;
     public Collider lookaheadPoint;
 
+    private bool canChange;
     private TileSelector tileSelector;
     private Vector3 currentDirection;
     private const float SpeedScale = 0.1f;
@@ -54,6 +55,7 @@ public class Walker : MonoBehaviour
             animator.SetTrigger(Move);
         }
         transform.Translate(currentDirection * speed * SpeedScale, Space.World);
+        canChange = true;
     }
 
     private void CheckForRedirect(RaycastHit hit)
@@ -121,13 +123,14 @@ public class Walker : MonoBehaviour
             currentDirection = Vector3.Cross(transform.TransformDirection(Vector3.up), currentDirection);
             transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(currentDirection, transform.up));
         }
-        else if(collider.gameObject.layer == Layers.Floor)
+        else if(collider.gameObject.layer == Layers.Floor && canChange)
         {
-            currentDirection = Vector3.Cross(currentDirection, transform.TransformDirection(Vector3.right));
-            Vector3 ahead = transform.forward * (lookForwardDistance / 2);
+            //currentDirection = Vector3.Cross(currentDirection, transform.TransformDirection(Vector3.right));
+            currentDirection = transform.up;
+            Vector3 ahead = transform.forward * (lookForwardDistance * 0.66f);
             transform.localPosition += ahead;
             transform.SetPositionAndRotation(transform.position, Quaternion.LookRotation(currentDirection, -1 * transform.forward));
-            
+            canChange = false;
         }
     }
     
