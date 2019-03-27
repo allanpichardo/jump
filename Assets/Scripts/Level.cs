@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class Level : MonoBehaviour
 {
+    public int nextScene = 1;
     public Text titleText;
     public float titleDuration = 1.5f;
     private float accumTime;
@@ -18,7 +19,7 @@ public class Level : MonoBehaviour
 
     public void OnLevelCompleted()
     {
-        
+        SceneManager.LoadScene(nextScene);
     }
 
     private void Update()

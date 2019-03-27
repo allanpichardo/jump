@@ -590,6 +590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4308e7349fb4145e7a8fb488c051240f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextScene: 3
   titleText: {fileID: 1319098267}
   titleDuration: 1.5
 --- !u!114 &161902778
