@@ -42,10 +42,7 @@ public class TileSelector : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (maxAttempts > 0)
-        {
-            DrawRangeGrid();
-        }
+        DrawRangeGrid();
 
         lineRenderer.positionCount = 0;
         Ray ray = camera.ScreenPointToRay(Input.mousePosition);
