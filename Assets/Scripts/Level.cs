@@ -11,6 +11,12 @@ public class Level : MonoBehaviour
     public float titleDuration = 1.5f;
     private float accumTime;
     private bool isTitleTimeElapsed;
+    private AudioSource audioSource;
+
+    private void Start()
+    {
+        audioSource = GetComponent<AudioSource>();
+    }
 
     public void OnLevelReset()
     {
@@ -19,7 +25,24 @@ public class Level : MonoBehaviour
 
     public void OnLevelCompleted()
     {
+        if (audioSource)
+        {
+            StartCoroutine(FadeOut(audioSource, 1.0f));
+        }
         SceneManager.LoadScene(nextScene);
+    }
+    
+    IEnumerator FadeOut (AudioSource audioSource, float FadeTime) {
+        float startVolume = audioSource.volume;
+ 
+        while (audioSource.volume > 0) {
+            audioSource.volume -= startVolume * Time.deltaTime / FadeTime;
+ 
+            yield return null;
+        }
+ 
+        audioSource.Stop ();
+        audioSource.volume = startVolume;
     }
 
     private void Update()

@@ -11,8 +11,9 @@ public class Walker : MonoBehaviour
     public float lookForwardDistance = 0.5f;
     public float lookDownDistance = 0.5f;
     public float redirectorDistance = 0.5f;
-    public Collider lookaheadPoint;
+    public AudioClip teleportSound;
 
+    private AudioSource audioSource;
     private bool canChange;
     private TileSelector tileSelector;
     private Vector3 currentDirection;
@@ -24,6 +25,7 @@ public class Walker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         tileSelector = level.GetComponent<TileSelector>();
         animator = GetComponent<Animator>();
         currentDirection = transform.TransformDirection(Vector3.forward);
@@ -113,6 +115,10 @@ public class Walker : MonoBehaviour
                 transform.rotation = Quaternion.LookRotation(currentDirection, floorUp);
             }
             tileSelector.ClosePortal(destination.redirector);
+            if (audioSource && teleportSound)
+            {
+                audioSource.PlayOneShot(teleportSound);
+            }
         }
     }
 

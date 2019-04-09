@@ -15,7 +15,9 @@ public class TileSelector : MonoBehaviour
     public Material negativeHighlightMaterial;
     public float portalDistance = 10.0f;
     public List<Redirector.Direction> availableActions;
-
+    public AudioClip portalOpenSound;
+    public AudioSource audioSource;
+    
     private Stack<Redirector.Direction> directions;
     private Dictionary<TeleportPoint, TeleportPoint> portals;
     private Stack<TeleportPoint> lastPoint;
@@ -78,6 +80,11 @@ public class TileSelector : MonoBehaviour
                             {
                                 portals[lastPoint.Peek()] = tp;
                                 lastPoint.Push(tp);
+                            }
+
+                            if (audioSource && portalOpenSound)
+                            {
+                                audioSource.PlayOneShot(portalOpenSound);
                             }
 
                             maxAttempts--;
