@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Jump* - Allan Pichardo</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style2.css">
+    <script src="TemplateData/UnityProgress.js"></script>
+    <script src="Build/UnityLoader.js"></script>
+    <script>
+      var gameInstance = UnityLoader.instantiate("gameContainer", "Build/Jump.json", {onProgress: UnityProgress});
+    </script>
+  </head>
+  <body>
+    <p>Allan Pichardo - CART 315 - Winter 2019</p>
+    <div class="title">Jump*: A Puzzle Game</div>
+    <div class="webgl-content">
+      <div class="gc" id="gameContainer" style="width: 960px; height: 600px; margin-left: auto;"></div>
+      <div class="footer">
+        <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
+      </div>
+    </div>
+    <p>Github repository: <a href="https://github.com/allanpichardo/jump">https://github.com/allanpichardo/jump</a></p>
+    <h1>Design Journal</h1>
+    <p>Jump* is a puzzle game that mixes mechanics from Chu Chu Rocket and Portal. By strategically placing portals on the board, the dog is able to maneuver its way to the goal. The original concept was to use the movement mechanic from Chu Chu Rocket (straight lines and right angles) and extrapolate it to 3D movement by adding turns in the Z-axis.</p>
+    <h2>First Playtest</h2>
+    <p>For the first playtest, I completed a sparse world with turns in all three axes. My main objective was to explore the movement mechanic and test whether it would be possible for users to understand how to use it to reach the goal. The second objective was to test the portal mechanic. By clicking on a tile in the map, the user could transport the dog into another tile. Most users understood the right-angle movement mechanic but appeared to be confused by the portals. They did not seem to understand that the dog’s direction while entering the portal directly corresponds with its direction while exiting.</p>
+    <p>To address these problems, I implemented a system which draws lines connecting portals on the map. The idea was to guide the user subtly and inform them that by clicking on the world once, it would be necessary to click again to complete the portal (what I call one “jump”). Furthermore, seeing the line on the map should give the user the idea that touching the first portal will transport them to the second one.</p>
+    <h2>Second Playtest</h2>
+    <p>During the second playtest, having addressed the UX issues raised during the first test, I focused on introducing a puzzling element to the game. The ability to move the dog through portals, as introduced in the first test, made the character too overpowered. The player needed a good reason not to simply drop a portal next to the goal. To achieve this, I implemented a portal range limit. As the user adds more portals, the range organically increases. Even though the color-coded tiles helped players understand where portals could be created, there was still some confusion since a player would have to move the mouse over multiple tiles to test them first. This created significant friction for most testers. As a solution, I implemented a light emission property for accessible tiles. Put simply, tiles that are accessible to the player have a slight glow while others are dark.</p>
+    <h2>Third Playtest</h2>
+    <p>With the most pervasive UX issues covered, I began to think more critically about the puzzle progression in the game. I felt it was important to introduce game mechanics slowly, with each level becoming progressively more difficult. If done correctly, this would help users to learn how to play the game without having to provide any boring tutorials.</p>
+    <p>I presented three levels, each with increasing difficulty to the testers with varying results. Only a handful of players were able to complete all the levels. After observing the play sessions, I realized that some players were being confused by the colors in the game. I decided to brighten the board once users exhausted all their portals. This would prompt users to click “Go” and start their session.</p>
+    <p>My assumption of introducing mechanics slowly was correct. Many users were able to realize organically that entering a portal in a certain direction corresponds with exiting in a certain direction. The only other problem I encountered was figuring out how to introduce the game controls. To address this problem, I added two more levels. These would include a very easy first level with no portals. This was intended only to teach the player the movement controls. The other level was a final puzzle with the highest difficulty. This was intended to use all the skill gained throughout the game.</p>
+    <h2>Final Result</h2>
+    <p>Overall, I feel very satisfied with the game. Having made my adjustments based on the lessons learned from playtesting, I allowed some more players to try the final result. To my satisfaction, they were capable of reaching the final level without any intervention or hints from me. I think there is some potential in the game and would like to create some more challenging puzzles to add to it. I did not get to exploit the 3D movement aspect of the game as much as I wanted to. Unfortunately, the playtest results showed that it was more important to introduce the mechanics slowly to guide the users. However, now that those issues have been resolved, I think it’s possible to flesh out the game with even greater difficulty.</p>
+  </body>
+</html>
